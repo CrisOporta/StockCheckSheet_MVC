@@ -1,0 +1,73 @@
+﻿@model Input
+
+<form method="post" class="d-flex justify-content-center">
+    <div class="border p-3 mt-4 w-50">
+        <div class="row pb-2">
+            <h2 class="text-primary">Create Input</h2>
+            <hr />
+        </div>
+
+        <div class="mb-3 row p-1">
+            <div class="input-group">
+                <input class="form-control text-muted w-auto" type="text" id="datepicker">
+                <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
+            </div>
+         </div>
+
+        <div class="mb-3 row p-3">
+            <label asp-for="Amount" class="p-0"></label>
+            <input asp-for="Amount" class="form-control" id="amount" />
+            <span asp-validation-for="Amount" class="text-danger"></span>
+        </div>
+        <div class="mb-3 row p-3">
+            <label asp-for="UnitCost" class="p-0"></label>
+            <input asp-for="UnitCost" class="form-control" type="number" id="unitCost" />
+            <span asp-validation-for="UnitCost" class="text-danger"></span>
+        </div>
+        <div class="mb-3 row p-3">
+            <label asp-for="TotalCost" class="p-0"></label>
+            <input asp-for="TotalCost" class="form-control" type="number" id="totalCost" readonly />
+            <span asp-validation-for="TotalCost" class="text-danger"></span>
+        </div>
+
+ 
+
+        <div class="row">
+            <div class="col-6 col-md-4">
+                <button type="submit" class="btn btn-primary form-control">Create</button>
+            </div>
+            <div class="col-6 col-md-4">
+                <a asp-controller="Input" asp-action="Index" class="btn btn-secondary border  form-control">
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+
+    <script>
+        document.getElementById('amount').addEventListener('input', calculateTotalCost);
+        document.getElementById('unitCost').addEventListener('input', calculateTotalCost);
+
+        function calculateTotalCost() {
+            var amount = parseFloat(document.getElementById('amount').value) || 0;
+            var unitCost = parseFloat(document.getElementById('unitCost').value) || 0;
+            var totalCost = amount * unitCost;
+            document.getElementById('totalCost').value = totalCost.toFixed(2);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var datepicker = document.getElementById('datepicker');
+            var today = new Date();
+            var day = ("0" + today.getDate()).slice(-2);
+            var month = ("0" + (today.getMonth() + 1)).slice(-2);
+            var year = today.getFullYear();
+            datepicker.value = day + "/" + month + "/" + year;
+        });
+    </script>
+}
