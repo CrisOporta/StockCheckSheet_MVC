@@ -40,6 +40,7 @@ namespace StockCheckSheetWeb.Controllers
             {
                 _db.Inputs.Add(obj);
                 _db.SaveChanges();
+                TempData["success"] = "Input created successfully!";
                 return RedirectToAction("Index");
             }
             return View();
@@ -69,6 +70,7 @@ namespace StockCheckSheetWeb.Controllers
             {
                 _db.Inputs.Update(obj);
                 _db.SaveChanges();
+                TempData["success"] = "Input updated successfully!";
                 return RedirectToAction("Index");
             }
             return View();
@@ -102,6 +104,7 @@ namespace StockCheckSheetWeb.Controllers
             }
             _db.Inputs.Remove(obj);
             _db.SaveChanges();
+            TempData["success"] = "Input deleted successfully!";
             return RedirectToAction("Index");
         }
     }

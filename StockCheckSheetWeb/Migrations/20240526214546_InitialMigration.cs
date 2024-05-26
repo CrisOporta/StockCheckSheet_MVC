@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -18,6 +19,7 @@ namespace StockCheckSheetWeb.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Amount = table.Column<int>(type: "int", nullable: false),
                     UnitCost = table.Column<double>(type: "float", nullable: false),
                     TotalCost = table.Column<double>(type: "float", nullable: false)
@@ -33,6 +35,7 @@ namespace StockCheckSheetWeb.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Amount = table.Column<int>(type: "int", nullable: false),
                     UnitCost = table.Column<double>(type: "float", nullable: false),
                     TotalCost = table.Column<double>(type: "float", nullable: false)
@@ -48,6 +51,7 @@ namespace StockCheckSheetWeb.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Amount = table.Column<int>(type: "int", nullable: false),
                     UnitCost = table.Column<double>(type: "float", nullable: false),
                     TotalCost = table.Column<double>(type: "float", nullable: false)
@@ -59,12 +63,12 @@ namespace StockCheckSheetWeb.Migrations
 
             migrationBuilder.InsertData(
                 table: "Inputs",
-                columns: new[] { "Id", "Amount", "TotalCost", "UnitCost" },
+                columns: new[] { "Id", "Amount", "Date", "TotalCost", "UnitCost" },
                 values: new object[,]
                 {
-                    { 1, 5, 52.5, 10.5 },
-                    { 2, 10, 125.0, 12.5 },
-                    { 3, 3, 21.0, 7.0 }
+                    { 1, 5, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 52.5, 10.5 },
+                    { 2, 10, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 125.0, 12.5 },
+                    { 3, 3, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 21.0, 7.0 }
                 });
         }
 
