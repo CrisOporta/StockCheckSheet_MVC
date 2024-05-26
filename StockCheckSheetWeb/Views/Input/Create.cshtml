@@ -7,32 +7,31 @@
             <hr />
         </div>
 
-        <div class="mb-3 row p-1">
-            <div class="input-group">
-                <input class="form-control text-muted w-auto" type="text" id="datepicker">
-                <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
-            </div>
+        <div class="mb-3 row p-3 py-0">
+            <label asp-for="Date" class="p-0 py-2"></label>
+            <input asp-for="Date" class="form-control">
+            <span asp-validation-for="Date" class="text-danger"></span>
          </div>
 
-        <div class="mb-3 row p-3">
-            <label asp-for="Amount" class="p-0"></label>
+        <div class="mb-3 row p-3 py-0">
+            <label asp-for="Amount" class="p-0 py-2"></label>
             <input asp-for="Amount" class="form-control" id="amount" />
             <span asp-validation-for="Amount" class="text-danger"></span>
         </div>
-        <div class="mb-3 row p-3">
-            <label asp-for="UnitCost" class="p-0"></label>
+        <div class="mb-3 row p-3 py-0">
+            <label asp-for="UnitCost" class="p-0 py-2"></label>
             <input asp-for="UnitCost" class="form-control" type="number" id="unitCost" />
             <span asp-validation-for="UnitCost" class="text-danger"></span>
         </div>
-        <div class="mb-3 row p-3">
-            <label asp-for="TotalCost" class="p-0"></label>
+        <div class="mb-3 row p-3 py-0">
+            <label asp-for="TotalCost" class="p-0 py-2"></label>
             <input asp-for="TotalCost" class="form-control" type="number" id="totalCost" readonly />
             <span asp-validation-for="TotalCost" class="text-danger"></span>
         </div>
 
  
 
-        <div class="row">
+        <div class="row py-2">
             <div class="col-6 col-md-4">
                 <button type="submit" class="btn btn-primary form-control">Create</button>
             </div>
@@ -61,13 +60,5 @@
             document.getElementById('totalCost').value = totalCost.toFixed(2);
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            var datepicker = document.getElementById('datepicker');
-            var today = new Date();
-            var day = ("0" + today.getDate()).slice(-2);
-            var month = ("0" + (today.getMonth() + 1)).slice(-2);
-            var year = today.getFullYear();
-            datepicker.value = day + "/" + month + "/" + year;
-        });
     </script>
 }
