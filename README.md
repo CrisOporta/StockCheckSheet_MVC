@@ -6,6 +6,8 @@ Br. Cristian José Oporta Cajina
 
 Br. Lúder Yordan Mejía Aráuz
 
+Br. Freddy Alonso Valencia Hernández
+
 ## Ejemplo Nº 1:
 ![image](https://github.com/CrisOporta/StockCheckSheet_MVC/assets/47622028/ce3c476e-4f7b-4983-973e-3e8c03a78c93)
 
