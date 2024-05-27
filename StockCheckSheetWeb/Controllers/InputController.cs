@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StockCheckSheetWeb.Data;
 using StockCheckSheetWeb.Models;
@@ -15,6 +17,42 @@ namespace StockCheckSheetWeb.Controllers
             _db = db;
         }
 
+        public IActionResult ExportToExcel()
+        {
+            var inputs = _db.Inputs.OrderByDescending(u => u.Date).ToList();
+
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Inputs");
+
+                // Agregar los encabezados
+                worksheet.Cell(1, 1).Value = "Date";
+                worksheet.Cell(1, 2).Value = "Amount";
+                worksheet.Cell(1, 3).Value = "Unit Cost";
+                worksheet.Cell(1, 4).Value = "Total Cost";
+
+                // Agregar valores
+                for (int i = 0; i < inputs.Count; i++)
+                {
+                    worksheet.Cell(i + 2, 1).Value = inputs[i].Date.ToString("dd/MM/yyyy");
+                    worksheet.Cell(i + 2, 2).Value = inputs[i].Amount;
+                    worksheet.Cell(i + 2, 3).Value = inputs[i].UnitCost;
+                    worksheet.Cell(i + 2, 4).Value = inputs[i].TotalCost;
+                }
+
+                // Agregar totales
+                worksheet.Cell(inputs.Count + 2, 1).Value = "Total";
+                worksheet.Cell(inputs.Count + 2, 2).Value = inputs.Sum(u => u.Amount);
+                worksheet.Cell(inputs.Count + 2, 4).Value = inputs.Sum(u => u.TotalCost);
+
+                var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                stream.Position = 0;
+
+                string excelName = $"Inputs-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.xlsx";
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+            }
+        }
 
         // List all Inputs ---------------------------------------------------
         public IActionResult Index()
