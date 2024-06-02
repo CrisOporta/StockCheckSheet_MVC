@@ -1,8 +1,7 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using StockCheckSheetWeb.Data;
+using StockCheckSheet.DataAccess.Repository.IRepository;
+using StockCheckSheet.Models.ViewModel;
 using StockCheckSheetWeb.Models;
 
 namespace StockCheckSheetWeb.Controllers
@@ -10,16 +9,15 @@ namespace StockCheckSheetWeb.Controllers
     public class InputController : Controller
     {
 
-        // Make connection to Database
-        private readonly ApplicationDbContext _db;
-        public InputController(ApplicationDbContext db)
+        private readonly IUnitOfWork _unitOfWork;
+        public InputController(IUnitOfWork unitOfWork)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult ExportToExcel()
         {
-            var inputs = _db.Inputs.OrderByDescending(u => u.Date).ToList();
+            var inputs = _unitOfWork.Input.GetAll().OrderByDescending(u => u.Date).ToList();
 
             using (var workbook = new XLWorkbook())
             {
@@ -58,7 +56,7 @@ namespace StockCheckSheetWeb.Controllers
         public IActionResult Index()
         {
             //var objCategoryList = _db.Categories.ToList();
-            List<Input> objInputsList = _db.Inputs.ToList();
+            List<Input> objInputsList = _unitOfWork.Input.GetAll().ToList();
             return View(objInputsList);
         }
 
@@ -70,14 +68,20 @@ namespace StockCheckSheetWeb.Controllers
         }
         // Create a new Input ---------------------------------------------------
         [HttpPost]
-        public IActionResult Create(Input obj)
+        public IActionResult Create(InputVM obj)
         {
-            
 
             if (ModelState.IsValid)
             {
-                _db.Inputs.Add(obj);
-                _db.SaveChanges();
+                obj.Stock.Date = obj.Input.Date;
+                obj.Stock.Amount = obj.Input.Amount;
+                obj.Stock.TotalCost = obj.Input.TotalCost;
+                obj.Stock.ReportId = obj.Input.ReportId;
+
+                _unitOfWork.Input.Add(obj.Input);
+                _unitOfWork.Stock.Add(obj.Stock);
+
+                _unitOfWork.Save();
                 TempData["success"] = "Input created successfully!";
                 return RedirectToAction("Index");
             }
@@ -92,7 +96,7 @@ namespace StockCheckSheetWeb.Controllers
             {
                 return NotFound();
             }
-            Input? inputFromDb = _db.Inputs.Find(id);
+            Input? inputFromDb = _unitOfWork.Input.Get(u => u.Id == id);
 
             if (inputFromDb == null)
             {
@@ -106,8 +110,8 @@ namespace StockCheckSheetWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Inputs.Update(obj);
-                _db.SaveChanges();
+                _unitOfWork.Input.Update(obj);
+                _unitOfWork.Save();
                 TempData["success"] = "Input updated successfully!";
                 return RedirectToAction("Index");
             }
@@ -123,7 +127,7 @@ namespace StockCheckSheetWeb.Controllers
             {
                 return NotFound();
             }
-            Input? inputFromDb = _db.Inputs.Find(id);
+            Input? inputFromDb = _unitOfWork.Input.Get(u => u.Id == id);
 
             if (inputFromDb == null)
             {
@@ -135,13 +139,13 @@ namespace StockCheckSheetWeb.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePOST(int? id)
         {
-            Input? obj = _db.Inputs.Find(id);
+            Input? obj = _unitOfWork.Input.Get(u => u.Id == id);
             if (obj == null)
             {
                 return NotFound();
             }
-            _db.Inputs.Remove(obj);
-            _db.SaveChanges();
+            _unitOfWork.Input.Remove(obj);
+            _unitOfWork.Save();
             TempData["success"] = "Input deleted successfully!";
             return RedirectToAction("Index");
         }

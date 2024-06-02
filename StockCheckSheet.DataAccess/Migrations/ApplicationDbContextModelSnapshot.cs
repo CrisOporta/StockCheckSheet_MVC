@@ -3,20 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using StockCheckSheetWeb.Data;
+using StockCheckSheet.DataAccess.Data;
 
 #nullable disable
 
-namespace StockCheckSheetWeb.Migrations
+namespace StockCheckSheet.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240526214546_InitialMigration")]
-    partial class InitialMigration
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,6 +36,9 @@ namespace StockCheckSheetWeb.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("ReportId")
+                        .HasColumnType("int");
+
                     b.Property<double>("TotalCost")
                         .HasColumnType("float");
 
@@ -46,6 +46,8 @@ namespace StockCheckSheetWeb.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ReportId");
 
                     b.ToTable("Inputs");
 
@@ -55,6 +57,7 @@ namespace StockCheckSheetWeb.Migrations
                             Id = 1,
                             Amount = 5,
                             Date = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReportId = 1,
                             TotalCost = 52.5,
                             UnitCost = 10.5
                         },
@@ -63,6 +66,7 @@ namespace StockCheckSheetWeb.Migrations
                             Id = 2,
                             Amount = 10,
                             Date = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReportId = 1,
                             TotalCost = 125.0,
                             UnitCost = 12.5
                         },
@@ -71,6 +75,7 @@ namespace StockCheckSheetWeb.Migrations
                             Id = 3,
                             Amount = 3,
                             Date = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReportId = 1,
                             TotalCost = 21.0,
                             UnitCost = 7.0
                         });
@@ -90,6 +95,9 @@ namespace StockCheckSheetWeb.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("ReportId")
+                        .HasColumnType("int");
+
                     b.Property<double>("TotalCost")
                         .HasColumnType("float");
 
@@ -98,7 +106,28 @@ namespace StockCheckSheetWeb.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ReportId");
+
                     b.ToTable("Outputs");
+                });
+
+            modelBuilder.Entity("StockCheckSheetWeb.Models.Report", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Reports");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1
+                        });
                 });
 
             modelBuilder.Entity("StockCheckSheetWeb.Models.Stock", b =>
@@ -115,6 +144,9 @@ namespace StockCheckSheetWeb.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("ReportId")
+                        .HasColumnType("int");
+
                     b.Property<double>("TotalCost")
                         .HasColumnType("float");
 
@@ -123,7 +155,51 @@ namespace StockCheckSheetWeb.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ReportId");
+
                     b.ToTable("Stocks");
+                });
+
+            modelBuilder.Entity("StockCheckSheetWeb.Models.Input", b =>
+                {
+                    b.HasOne("StockCheckSheetWeb.Models.Report", "Report")
+                        .WithMany("Inputs")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Report");
+                });
+
+            modelBuilder.Entity("StockCheckSheetWeb.Models.Output", b =>
+                {
+                    b.HasOne("StockCheckSheetWeb.Models.Report", "Report")
+                        .WithMany("Outputs")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Report");
+                });
+
+            modelBuilder.Entity("StockCheckSheetWeb.Models.Stock", b =>
+                {
+                    b.HasOne("StockCheckSheetWeb.Models.Report", "Report")
+                        .WithMany("Stocks")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Report");
+                });
+
+            modelBuilder.Entity("StockCheckSheetWeb.Models.Report", b =>
+                {
+                    b.Navigation("Inputs");
+
+                    b.Navigation("Outputs");
+
+                    b.Navigation("Stocks");
                 });
 #pragma warning restore 612, 618
         }

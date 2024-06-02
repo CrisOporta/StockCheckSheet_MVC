@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StockCheckSheetWeb.Models
 {
@@ -31,9 +32,12 @@ namespace StockCheckSheetWeb.Models
         [Range(0.01, double.MaxValue, ErrorMessage = "Total Cost must be greater than 0.")]
         public double TotalCost { get; set; }
 
-
+        // Foreign key
+        [ForeignKey("ReportId")]
+        public int ReportId { get; set; }
 
         // Navigation properties
-        //public StockCheckSheet StockCheckSheet { get; set; }
+        [ValidateNever]
+        public Report? Report { get; set; }
     }
 }

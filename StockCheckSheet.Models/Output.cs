@@ -1,14 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StockCheckSheetWeb.Models
 {
-    public class Input
+    public class Output
     {
         [Key]
         public int Id { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessage = "Date is required.")]
         [DisplayName("Date")]
         public DateTime Date { get; set; }
@@ -30,8 +32,12 @@ namespace StockCheckSheetWeb.Models
         [Range(0.01, double.MaxValue, ErrorMessage = "Total Cost must be greater than 0.")]
         public double TotalCost { get; set; }
 
+        // Foreign key
+        [ForeignKey("ReportId")]
+        public int ReportId { get; set; }
 
         // Navigation properties
-        //public StockCheckSheet StockCheckSheet { get; set; }
+        [ValidateNever]
+        public Report Report { get; set; }
     }
 }
