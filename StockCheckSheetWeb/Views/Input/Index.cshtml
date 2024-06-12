@@ -44,7 +44,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var obj in Model.OrderByDescending(u => u.Date))
+                @foreach (var obj in Model.OrderBy(u => u.Date))
                 {
                     <tr>
                         <td>
@@ -84,6 +84,7 @@
                     <td>
                         C$ @Model.Sum(u => u.TotalCost).ToString("0.00")
                     </td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>

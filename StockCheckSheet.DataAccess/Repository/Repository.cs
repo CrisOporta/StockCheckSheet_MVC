@@ -31,7 +31,6 @@ namespace StockCheckSheet.DataAccess.Repository
             if (tracked)
             {
                 query = dbSet;
-
             }
             else
             {

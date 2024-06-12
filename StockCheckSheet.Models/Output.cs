@@ -10,7 +10,6 @@ namespace StockCheckSheetWeb.Models
         [Key]
         public int Id { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessage = "Date is required.")]
         [DisplayName("Date")]
         public DateTime Date { get; set; }

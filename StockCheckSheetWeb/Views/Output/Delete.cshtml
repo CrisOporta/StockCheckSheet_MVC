@@ -1,0 +1,43 @@
+﻿@model Output
+
+<form method="post" class="d-flex justify-content-center">
+    <input asp-for="Id" hidden />
+    <div class="border p-3 mt-4 ">
+        <div class="row pb-2">
+            <h2 class="text-primary">Delete Output</h2>
+            <hr />
+        </div>
+        <div class="mb-3 row p-3 py-0">
+            <label asp-for="Date" class="p-0 py-2"></label>
+            <input asp-for="Date" disabled class="form-control" />
+        </div>
+        <div class="mb-3 row p-3 py-0">
+            <label asp-for="Amount" class="p-0 py-2"></label>
+            <input asp-for="Amount" disabled class="form-control" />
+        </div>
+        <div class="mb-3 row p-3 py-0">
+            <label asp-for="UnitCost" class="p-0 py-2"></label>
+            <input asp-for="UnitCost" disabled class="form-control" />
+
+        </div>
+        <div class="mb-3 row p-3 py-0">
+            <label asp-for="TotalCost" class="p-0 py-2"></label>
+            <input asp-for="TotalCost" disabled class="form-control" />
+
+        </div>
+
+        @* Colocar el id del reporte manualmente *@
+        <input asp-for="ReportId" value="1" hidden />
+
+        <div class="row">
+            <div class="col-auto ">
+                <button type="submit" class="btn btn-danger form-control">Delete</button>
+            </div>
+            <div class="col-auto">
+                <a asp-controller="Output" asp-action="Index" class="btn btn-secondary border  form-control">
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</form>

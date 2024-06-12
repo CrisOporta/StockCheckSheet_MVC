@@ -17,7 +17,7 @@ namespace StockCheckSheetWeb.Controllers
 
         public IActionResult ExportToExcel()
         {
-            var inputs = _unitOfWork.Input.GetAll().OrderByDescending(u => u.Date).ToList();
+            var inputs = _unitOfWork.Input.GetAll().OrderBy(u => u.Date).ToList();
 
             using (var workbook = new XLWorkbook())
             {
@@ -64,23 +64,28 @@ namespace StockCheckSheetWeb.Controllers
         // Return view Create ---------------------------------------------------
         public IActionResult Create()
         {
-            return View();
+            var input = new Input();
+
+            input.Date = DateTime.Now;
+
+            return View(input);
         }
         // Create a new Input ---------------------------------------------------
         [HttpPost]
-        public IActionResult Create(InputVM obj)
+        public IActionResult Create(Input obj)
         {
 
             if (ModelState.IsValid)
             {
-                obj.Stock.Date = obj.Input.Date;
-                obj.Stock.Amount = obj.Input.Amount;
-                obj.Stock.TotalCost = obj.Input.TotalCost;
-                obj.Stock.ReportId = obj.Input.ReportId;
+                Stock stock = new Stock();
+                stock.Date = obj.Date;
+                stock.Amount = obj.Amount;
+                stock.UnitCost = obj.UnitCost;
+                stock.TotalCost = obj.TotalCost;
+                stock.ReportId = obj.ReportId;
+                _unitOfWork.Stock.Add(stock);
 
-                _unitOfWork.Input.Add(obj.Input);
-                _unitOfWork.Stock.Add(obj.Stock);
-
+                _unitOfWork.Input.Add(obj);
                 _unitOfWork.Save();
                 TempData["success"] = "Input created successfully!";
                 return RedirectToAction("Index");
@@ -110,6 +115,16 @@ namespace StockCheckSheetWeb.Controllers
         {
             if (ModelState.IsValid)
             {
+                
+                Stock stock = _unitOfWork.Stock.Get(u => u.Date == obj.Date);
+
+                stock.Date = obj.Date;
+                stock.Amount = obj.Amount;
+                stock.UnitCost = obj.UnitCost;
+                stock.TotalCost = obj.TotalCost;
+                stock.ReportId = obj.ReportId;
+
+                _unitOfWork.Stock.Update(stock);
                 _unitOfWork.Input.Update(obj);
                 _unitOfWork.Save();
                 TempData["success"] = "Input updated successfully!";
@@ -144,6 +159,17 @@ namespace StockCheckSheetWeb.Controllers
             {
                 return NotFound();
             }
+
+            Stock stock = _unitOfWork.Stock.Get(u => u.Date == obj.Date);
+
+            stock.Date = obj.Date;
+            stock.Amount = obj.Amount;
+            stock.UnitCost = obj.UnitCost;
+            stock.TotalCost = obj.TotalCost;
+            stock.ReportId = obj.ReportId;
+
+
+            _unitOfWork.Stock.Remove(stock);
             _unitOfWork.Input.Remove(obj);
             _unitOfWork.Save();
             TempData["success"] = "Input deleted successfully!";

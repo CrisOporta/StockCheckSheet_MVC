@@ -1,0 +1,108 @@
+﻿@model List<Stock>
+
+<div class="container pb-4 d-flex flex-column align-items-center">
+    <div class="row py-4 d-flex justify-content-between align-items-center">
+        <div class="col-auto">
+            <h2 class="text-primary mb-0">
+                Stock List
+            </h2>
+
+        </div>
+        <div class="col">
+            <h2 style="visibility: hidden;">
+                -------
+            </h2>
+        </div>
+        <div class="col-auto">
+            <a asp-controller="Stock" asp-action="ExportToExcel" class="btn btn-success mx-2">
+                <i class="bi bi-file-earmark-excel"></i> Export to Excel
+            </a>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <table class="table table-bordered table-striped w-auto">
+            <thead>
+                <tr>
+                    <th>
+                        Date
+                    </th>
+                    <th>
+                        Amount
+                    </th>
+                    <th>
+                        Unit Cost
+                    </th>
+                    <th>
+                        Total Cost
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var obj in Model.OrderBy(u => u.Date))
+                {
+                    @foreach (var objInput in ViewBag.InputList)
+                    {
+                        @if (obj.Date == objInput.Date && obj.TotalCost == objInput.TotalCost)
+                        {
+                            <tr class="table-success">
+                                <td>
+                                    @obj.Date.ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    @obj.Amount
+                                </td>
+                                <td>
+                                    C$ @obj.UnitCost
+                                </td>
+                                <td>
+                                    C$ @obj.TotalCost
+                                    <i class="bi bi-plus-circle"></i>
+
+                                </td>
+                            </tr>
+                            break;
+                        }
+                    }
+
+                    @foreach (var objOutput in ViewBag.OutputList)
+                    {
+                        @if (obj.Date == objOutput.Date && obj.TotalCost == objOutput.TotalCost)
+                        {
+                            <tr class="table-danger">
+                                <td>
+                                    @obj.Date.ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    @obj.Amount
+                                </td>
+                                <td>
+                                    C$ @obj.UnitCost
+                                </td>
+                                <td>
+                                    C$ @obj.TotalCost
+                                    <i class="bi bi-dash-circle"></i>
+                                </td>
+                            </tr>
+                            break;
+                        }
+                    }
+                }
+
+                <tr>
+                    <th>
+                        <strong>Total</strong>
+                    </th>
+                    <td>
+                        @ViewBag.TotalSum
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                        C$ @ViewBag.TotalAmout.ToString("0.00")
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>

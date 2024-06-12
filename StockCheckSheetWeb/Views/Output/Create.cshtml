@@ -1,0 +1,72 @@
+﻿@model OutputVM
+
+<form method="post" class="d-flex justify-content-center">
+    <div class="border p-3 mt-4 w-50">
+        <div class="row pb-2 d-flex align-items-center">
+            <h2 class="col-6 text-primary">Create Output</h2>
+            <div class="col-4"></div>
+            <div class="col-2">
+                <p><strong>Inputs: </strong>@Model.InputList.Sum(u => u.Amount)</p>
+            </div>
+            
+            <hr />
+        </div>
+
+        <div class="mb-3 row p-3 py-0">
+            <label asp-for="Output.Date" class="p-0 py-2"></label>
+            <input asp-for="Output.Date" class="form-control">
+            <span asp-validation-for="Output.Date" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 row p-3 py-0">
+            <label asp-for="Output.Amount" class="p-0 py-2"></label>
+            <input asp-for="Output.Amount" class="form-control" id="amount" />
+            <span asp-validation-for="Output.Amount" class="text-danger"></span>
+        </div>
+        <div class="mb-3 row p-3 py-0">
+            <label asp-for="Output.UnitCost" class="p-0 py-2"></label>
+            <input asp-for="Output.UnitCost" class="form-control" type="number" id="unitCost" />
+            <span asp-validation-for="Output.UnitCost" class="text-danger"></span>
+        </div>
+        <div class="mb-3 row p-3 py-0">
+            <label asp-for="Output.TotalCost" class="p-0 py-2"></label>
+            <input asp-for="Output.TotalCost" class="form-control" type="number" id="totalCost" readonly />
+            <span asp-validation-for="Output.TotalCost" class="text-danger"></span>
+        </div>
+
+        @* Colocar el id del reporte manualmente *@
+        <input asp-for="Output.ReportId" value="1" hidden />
+
+
+
+        <div class="row py-2">
+            <div class="col-6 col-md-4">
+                <button type="submit" class="btn btn-primary form-control">Create</button>
+            </div>
+            <div class="col-6 col-md-4">
+                <a asp-controller="Output" asp-action="Index" class="btn btn-secondary border  form-control">
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+
+    <script>
+        document.getElementById('amount').addEventListener('input', calculateTotalCost);
+        document.getElementById('unitCost').addEventListener('input', calculateTotalCost);
+
+        function calculateTotalCost() {
+            var amount = parseFloat(document.getElementById('amount').value) || 0;
+            var unitCost = parseFloat(document.getElementById('unitCost').value) || 0;
+            var totalCost = amount * unitCost;
+            document.getElementById('totalCost').value = totalCost.toFixed(2);
+        }
+
+    </script>
+}

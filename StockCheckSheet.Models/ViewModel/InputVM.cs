@@ -1,4 +1,5 @@
-﻿using StockCheckSheetWeb.Models;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using StockCheckSheetWeb.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,6 @@ namespace StockCheckSheet.Models.ViewModel
     public class InputVM
     {
         public Input Input { get; set; }
-        public Stock Stock { get; set; }
+        public List<Output> OutputList { get; set; }
     }
 }
