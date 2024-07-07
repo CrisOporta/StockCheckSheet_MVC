@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockCheckSheet.DataAccess"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockCheckSheet.Models", "StockCheckSheet.Models\StockCheckSheet.Models.csproj", "{CF6A6E88-1CA5-48AF-9E3D-9B5FFE2787B2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockCheckSheetWeb", "StockCheckSheetWeb\StockCheckSheetWeb.csproj", "{F598F17F-3C0C-4741-BB10-8A3A64863066}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockCheckSheet.Utility", "StockCheckSheet.Utility\StockCheckSheet.Utility.csproj", "{FC73DCBC-5CC6-44BB-9C6A-51793E228366}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockCheckSheet.Utility", "StockCheckSheet.Utility\StockCheckSheet.Utility.csproj", "{FC73DCBC-5CC6-44BB-9C6A-51793E228366}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockCheckSheet.Web", "StockCheckSheet.Web\StockCheckSheet.Web.csproj", "{816FE469-741C-478F-A655-6B2ACFD57A85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +25,14 @@ Global
 		{CF6A6E88-1CA5-48AF-9E3D-9B5FFE2787B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF6A6E88-1CA5-48AF-9E3D-9B5FFE2787B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF6A6E88-1CA5-48AF-9E3D-9B5FFE2787B2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F598F17F-3C0C-4741-BB10-8A3A64863066}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F598F17F-3C0C-4741-BB10-8A3A64863066}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F598F17F-3C0C-4741-BB10-8A3A64863066}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F598F17F-3C0C-4741-BB10-8A3A64863066}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FC73DCBC-5CC6-44BB-9C6A-51793E228366}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FC73DCBC-5CC6-44BB-9C6A-51793E228366}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC73DCBC-5CC6-44BB-9C6A-51793E228366}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC73DCBC-5CC6-44BB-9C6A-51793E228366}.Release|Any CPU.Build.0 = Release|Any CPU
+		{816FE469-741C-478F-A655-6B2ACFD57A85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{816FE469-741C-478F-A655-6B2ACFD57A85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{816FE469-741C-478F-A655-6B2ACFD57A85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{816FE469-741C-478F-A655-6B2ACFD57A85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

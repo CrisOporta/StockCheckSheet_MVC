@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using StockCheckSheet.DataAccess.Data;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -32,11 +33,11 @@ namespace StockCheckSheetWeb.Models
         public double TotalCost { get; set; }
 
         // Foreign key
-        [ForeignKey("ReportId")]
-        public int ReportId { get; set; }
+        [ForeignKey("ApplicationUserId")]
+        public string ApplicationUserId { get; set; }
 
         // Navigation properties
         [ValidateNever]
-        public Report Report { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
     }
 }
