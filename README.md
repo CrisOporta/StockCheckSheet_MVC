@@ -1,15 +1,9 @@
-# Stock Check Sheet Web App
-Muchas gracias por visitar este humilde repositorio.
+# Stock Check Sheet
 
-## Los integrantes de este proyecto son:
-Br. Cristian José Oporta Cajina
+Stock Check Sheet is a system to update product entries and outputs in its simplest way to be represented in an application. This program focuses more on the correct way to use .NET Framework along with ASP.NET Core Identity, both combined can create applications totally out of this world.
 
-Br. Lúder Yordan Mejía Aráuz
-
-Br. Freddy Alonso Valencia Hernández
-
-## Ejemplo Nº 1:
-![image](https://github.com/CrisOporta/StockCheckSheet_MVC/assets/47622028/ce3c476e-4f7b-4983-973e-3e8c03a78c93)
+## Sample Nº 1:
+![image](https://github.com/CrisOporta/StockCheckSheet_MVC/assets/47622028/30f9b4d3-cff8-4782-8498-de96a4184139)
 
 ## ConnectionDafault:
 ```json
@@ -22,13 +16,23 @@ Br. Freddy Alonso Valencia Hernández
   },
   "AllowedHosts": "*",
   "ConnectionStrings": {
-    "DefaultConnection": "Server=DESKTOP-QDE9SEV\\SQLEXPRESS;Database=StockCheckSheet;Trusted_Connection=True;TrustServerCertificate=True"
+    "DefaultConnection": "Server={yourServer};Database=StockCheckSheet;Trusted_Connection=True;TrustServerCertificate=True"
   }
 }
 ```
 
 ## Commands:
+
+For package manager console.
+
 ```sh
 Add-Migration InitialMigration
 Update-Database
+```
+
+If you prefer dotnet commands.
+
+```sh
+dotnet ef migrations add InitialMigration
+dotnet ef database update
 ```
