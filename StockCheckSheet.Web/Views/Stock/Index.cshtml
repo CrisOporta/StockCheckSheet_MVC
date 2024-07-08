@@ -1,12 +1,17 @@
 ﻿@model List<Stock>
 
+@{
+    var inputList = ViewBag.InputList as IEnumerable<dynamic>;
+    var outputList = ViewBag.OutputList as IEnumerable<dynamic>;
+    var sortedModel = Model.OrderBy(u => u.Date).ToList();
+}
+
 <div class="container pb-4 d-flex flex-column align-items-center">
     <div class="row py-4 d-flex justify-content-between align-items-center">
         <div class="col-auto">
             <h2 class="text-primary mb-0">
                 Stock List
             </h2>
-
         </div>
         <div class="col">
             <h2 style="visibility: hidden;">
@@ -20,88 +25,38 @@
         </div>
     </div>
 
-
     <div class="row">
         <table class="table table-bordered table-striped w-auto">
             <thead>
                 <tr>
-                    <th>
-                        Date
-                    </th>
-                    <th>
-                        Amount
-                    </th>
-                    <th>
-                        Unit Cost
-                    </th>
-                    <th>
-                        Total Cost
-                    </th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Unit Cost</th>
+                    <th>Total Cost</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var obj in Model.OrderBy(u => u.Date))
+                @foreach (var obj in sortedModel)
                 {
-                    @foreach (var objInput in ViewBag.InputList)
-                    {
-                        @if (obj.Date == objInput.Date && obj.TotalCost == objInput.TotalCost)
-                        {
-                            <tr class="table-success">
-                                <td>
-                                    @obj.Date.ToString("dd/MM/yyyy")
-                                </td>
-                                <td>
-                                    @obj.Amount
-                                </td>
-                                <td>
-                                    C$ @obj.UnitCost
-                                </td>
-                                <td>
-                                    C$ @obj.TotalCost
-                                    <i class="bi bi-plus-circle"></i>
+                    bool isInput = inputList.Any(i => i.Date == obj.Date && i.TotalCost == obj.TotalCost);
+                    bool isOutput = outputList.Any(o => o.Date == obj.Date && o.TotalCost == obj.TotalCost);
 
-                                </td>
-                            </tr>
-                            break;
-                        }
-                    }
-
-                    @foreach (var objOutput in ViewBag.OutputList)
-                    {
-                        @if (obj.Date == objOutput.Date && obj.TotalCost == objOutput.TotalCost)
-                        {
-                            <tr class="table-danger">
-                                <td>
-                                    @obj.Date.ToString("dd/MM/yyyy")
-                                </td>
-                                <td>
-                                    @obj.Amount
-                                </td>
-                                <td>
-                                    C$ @obj.UnitCost
-                                </td>
-                                <td>
-                                    C$ @obj.TotalCost
-                                    <i class="bi bi-dash-circle"></i>
-                                </td>
-                            </tr>
-                            break;
-                        }
-                    }
+                    <tr class="@(isInput ? "table-success" : isOutput ? "table-danger" : "")">
+                        <td>@obj.Date.ToString("dd/MM/yyyy")</td>
+                        <td>@obj.Amount</td>
+                        <td>C$ @obj.UnitCost</td>
+                        <td>
+                            C$ @obj.TotalCost
+                            <i class="@(isInput ? "bi bi-plus-circle" : isOutput ? "bi bi-dash-circle" : "")"></i>
+                        </td>
+                    </tr>
                 }
 
                 <tr>
-                    <th>
-                        <strong>Total</strong>
-                    </th>
-                    <td>
-                        @ViewBag.TotalSum
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                        C$ @ViewBag.TotalAmout.ToString("0.00")
-                    </td>
+                    <th><strong>Total</strong></th>
+                    <td>@ViewBag.TotalSum</td>
+                    <td></td>
+                    <td>C$ @ViewBag.TotalAmout.ToString("0.00")</td>
                 </tr>
             </tbody>
         </table>

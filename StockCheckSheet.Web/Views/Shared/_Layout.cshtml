@@ -7,10 +7,9 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/layoutconfig.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/StockCheckSheetWeb.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
-
 </head>
 <body>
     <header>
@@ -38,9 +37,10 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Stock" asp-action="Index">Stocks</a>
                             </li>
-                            <li class="nav-item">
+
+                            @* <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Input" asp-action="Index">Report</a>
-                            </li>
+                            </li> *@
 
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">About us</a>
@@ -60,9 +60,9 @@
         </main>
     </div>
 
-    <footer class="footer border-top bg-primary " >
+    <footer class="footer border-top bg-primary ">
         <div class="container">
-            <p class="text-warning">Made with <i class="bi bi-heart-fill"></i> by our brilliant team.</p>
+            <p class="text-warning" style="margin-bottom: 10px">Made with <i class="bi bi-heart-fill"></i> by Cristian Oporta.</p>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

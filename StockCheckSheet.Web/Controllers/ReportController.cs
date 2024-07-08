@@ -8,5 +8,6 @@ namespace StockCheckSheetWeb.Controllers
         {
             return View();
         }
+
     }
 }

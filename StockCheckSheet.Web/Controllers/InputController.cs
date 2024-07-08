@@ -23,6 +23,7 @@ namespace StockCheckSheetWeb.Controllers
 
         public IActionResult ExportToExcel()
         {
+            // Obtener los datos
             var inputs = _unitOfWork.Input.GetAll().OrderBy(u => u.Date).ToList();
 
             using (var workbook = new XLWorkbook())
@@ -35,19 +36,51 @@ namespace StockCheckSheetWeb.Controllers
                 worksheet.Cell(1, 3).Value = "Unit Cost";
                 worksheet.Cell(1, 4).Value = "Total Cost";
 
+                // Formato de encabezados
+                var headers = worksheet.Range("A1:D1");
+                headers.Style.Font.Bold = true;
+                headers.Style.Fill.BackgroundColor = XLColor.LightGreen;
+                headers.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                headers.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
                 // Agregar valores
-                for (int i = 0; i < inputs.Count; i++)
+                int row = 2; // Iniciar en la segunda fila
+                foreach (var input in inputs)
                 {
-                    worksheet.Cell(i + 2, 1).Value = inputs[i].Date.ToString("dd/MM/yyyy");
-                    worksheet.Cell(i + 2, 2).Value = inputs[i].Amount;
-                    worksheet.Cell(i + 2, 3).Value = inputs[i].UnitCost;
-                    worksheet.Cell(i + 2, 4).Value = inputs[i].TotalCost;
+                    worksheet.Cell(row, 1).Value = input.Date.ToString("dd/MM/yyyy");
+                    worksheet.Cell(row, 2).Value = input.Amount;
+                    worksheet.Cell(row, 3).Value = input.UnitCost;
+                    worksheet.Cell(row, 4).Value = input.TotalCost;
+
+                    row++;
                 }
 
                 // Agregar totales
-                worksheet.Cell(inputs.Count + 2, 1).Value = "Total";
-                worksheet.Cell(inputs.Count + 2, 2).Value = inputs.Sum(u => u.Amount);
-                worksheet.Cell(inputs.Count + 2, 4).Value = inputs.Sum(u => u.TotalCost);
+                worksheet.Cell(row, 1).Value = "Total";
+                worksheet.Cell(row, 1).Style.Font.Bold = true;
+                worksheet.Cell(row, 2).Value = inputs.Sum(u => u.Amount);
+                worksheet.Cell(row, 4).Value = inputs.Sum(u => u.TotalCost);
+
+                // Dar formato a la tabla completamente
+                var dataRange = worksheet.Range("A1:D" + row);
+                dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                dataRange.Style.Font.FontSize = 14;
+
+                // Dar formato a la fecha
+                var date = worksheet.Range("A2:A" + row);
+                date.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                // Dar formato a los valores
+                var body = worksheet.Range("B2:D" + row);
+                body.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+                // Formato de pie de página
+                var footer = worksheet.Range("B" + row.ToString() + ":D" + row);
+                footer.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+                // Ajustar el ancho de las columnas
+                worksheet.Columns().AdjustToContents();
 
                 var stream = new MemoryStream();
                 workbook.SaveAs(stream);
@@ -58,13 +91,13 @@ namespace StockCheckSheetWeb.Controllers
             }
         }
 
+
         // List all Inputs ---------------------------------------------------
         public IActionResult Index()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            //var objCategoryList = _db.Categories.ToList();
             List<Input> objInputsList = _unitOfWork.Input.GetAll(u => u.ApplicationUserId == userId).ToList();
             return View(objInputsList);
         }
@@ -112,6 +145,7 @@ namespace StockCheckSheetWeb.Controllers
             {
                 return NotFound();
             }
+
             Input inputFromDb = _unitOfWork.Input.Get(u => u.Id == id);
 
             if (inputFromDb == null)
@@ -131,7 +165,7 @@ namespace StockCheckSheetWeb.Controllers
 
             if (ModelState.IsValid)
             {
-                Stock stock = _unitOfWork.Stock.Get(u => u.Date == obj.Date);
+                Stock stock = _unitOfWork.Stock.Get(u => u.ApplicationUserId == userId);
 
                 if(stock != null)
                 {

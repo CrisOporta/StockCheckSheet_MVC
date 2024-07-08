@@ -50,9 +50,18 @@ namespace StockCheckSheet.DataAccess.Repository
 
         }
 
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter, string? includeProperties = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter, string? includeProperties = null, bool tracked = false)
         {
             IQueryable<T> query = dbSet;
+            if (tracked)
+            {
+                query = dbSet;
+            }
+            else
+            {
+                query = dbSet.AsNoTracking();
+            }
+
             if (filter != null)
             {
                 query = query.Where(filter);

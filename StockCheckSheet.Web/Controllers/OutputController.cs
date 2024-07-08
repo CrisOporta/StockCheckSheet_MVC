@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -37,19 +38,51 @@ namespace StockCheckSheetWeb.Controllers
                 worksheet.Cell(1, 3).Value = "Unit Cost";
                 worksheet.Cell(1, 4).Value = "Total Cost";
 
+                // Formato de encabezados
+                var headers = worksheet.Range("A1:D1");
+                headers.Style.Font.Bold = true;
+                headers.Style.Fill.BackgroundColor = XLColor.LightGreen;
+                headers.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                headers.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
                 // Agregar valores
-                for (int i = 0; i < outputs.Count; i++)
+                int row = 2; // Iniciar en la segunda fila
+                foreach (var output in outputs)
                 {
-                    worksheet.Cell(i + 2, 1).Value = outputs[i].Date.ToString("dd/MM/yyyy");
-                    worksheet.Cell(i + 2, 2).Value = outputs[i].Amount;
-                    worksheet.Cell(i + 2, 3).Value = outputs[i].UnitCost;
-                    worksheet.Cell(i + 2, 4).Value = outputs[i].TotalCost;
+                    worksheet.Cell(row, 1).Value = output.Date.ToString("dd/MM/yyyy");
+                    worksheet.Cell(row, 2).Value = output.Amount;
+                    worksheet.Cell(row, 3).Value = output.UnitCost;
+                    worksheet.Cell(row, 4).Value = output.TotalCost;
+
+                    row++;
                 }
 
                 // Agregar totales
-                worksheet.Cell(outputs.Count + 2, 1).Value = "Total";
-                worksheet.Cell(outputs.Count + 2, 2).Value = outputs.Sum(u => u.Amount);
-                worksheet.Cell(outputs.Count + 2, 4).Value = outputs.Sum(u => u.TotalCost);
+                worksheet.Cell(row, 1).Value = "Total";
+                worksheet.Cell(row, 1).Style.Font.Bold = true;
+                worksheet.Cell(row, 2).Value = outputs.Sum(u => u.Amount);
+                worksheet.Cell(row, 4).Value = outputs.Sum(u => u.TotalCost);
+
+                // Dar formato a la tabla completamente
+                var dataRange = worksheet.Range("A1:D" + row);
+                dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                dataRange.Style.Font.FontSize = 14;
+
+                // Dar formato a la fecha
+                var date = worksheet.Range("A2:A" + row);
+                date.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                // Dar formato a los valores
+                var body = worksheet.Range("B2:D" + row);
+                body.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+                // Formato de pie de página
+                var footer = worksheet.Range("B" + row.ToString() + ":D" + row);
+                footer.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+                // Ajustar el ancho de las columnas
+                worksheet.Columns().AdjustToContents();
 
                 var stream = new MemoryStream();
                 workbook.SaveAs(stream);
@@ -60,13 +93,13 @@ namespace StockCheckSheetWeb.Controllers
             }
         }
 
+
         // List all Outputs ---------------------------------------------------
         public IActionResult Index()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            //var objCategoryList = _db.Categories.ToList();
             List<Output> objOutputsList = _unitOfWork.Output.GetAll(u => u.ApplicationUserId == userId).ToList();
             return View(objOutputsList);
         }
@@ -98,7 +131,46 @@ namespace StockCheckSheetWeb.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
+            var inputList = _unitOfWork.Input.GetAll(u => u.ApplicationUserId == userId).ToList();
+            var outputList = _unitOfWork.Output.GetAll(u => u.ApplicationUserId == userId).ToList();
+            var minInputsByDate = inputList.Where(u => u.Date < obj.Output.Date);
+
+            OutputVM outputVM = new()
+            {
+                InputList = inputList,
+                Output = new Output(),
+            };
+
+            if (inputList.Count == 0)
+            {
+                TempData["error"] = "You must have at least one input to create an output!";
+                return View(outputVM);
+            }
+
+            var totalAmountOutputList = outputList.Sum(u => u.Amount);
+            var minDateTimeInput = inputList.Min(u => u.Date);
+            var totalAmountInputList = inputList.Sum(u => u.Amount);
+            var minAmountInputsByDate = minInputsByDate.Sum(u => u.Amount);
+
             obj.Output.ApplicationUserId = userId;
+
+            if(obj.Output.Date < minDateTimeInput)
+            {
+                TempData["error"] = "Date entered is invalid!";
+                return View(outputVM);
+            }
+
+            if(obj.Output.Amount > totalAmountInputList || (obj.Output.Amount + totalAmountOutputList) > totalAmountInputList)
+            {
+                TempData["error"] = "Amount overflows total inputs!";
+                return View(outputVM);
+            }
+
+            if(obj.Output.Amount > minAmountInputsByDate)
+            {
+                TempData["error"] = "Amount overflows inputs by its date!";
+                return View(outputVM);
+            }
 
             if (ModelState.IsValid)
             {
@@ -126,47 +198,94 @@ namespace StockCheckSheetWeb.Controllers
             {
                 return NotFound();
             }
+
             Output outputFromDb = _unitOfWork.Output.Get(u => u.Id == id);
 
             if (outputFromDb == null)
             {
                 return NotFound();
             }
-            return View(outputFromDb);
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            List<Input> InputList = _unitOfWork.Input.GetAll(u => u.ApplicationUserId == userId.ToString()).ToList();
+
+            OutputVM outputVM = new()
+            {
+                InputList = InputList,
+                Output = outputFromDb,
+            };
+
+            return View(outputVM);
         }
         // Update a Output ---------------------------------------------------
         [HttpPost]
-        public IActionResult Edit(Output obj)
+        public IActionResult Edit(OutputVM obj)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            obj.ApplicationUserId = userId;
+            var inputList = _unitOfWork.Input.GetAll(u => u.ApplicationUserId == userId).ToList();
+            var outputList = _unitOfWork.Output.GetAll(u => u.ApplicationUserId == userId).ToList();
+            var minInputsByDate = inputList.Where(u => u.Date < obj.Output.Date);
+
+            if (outputList.Count > 0)
+            {
+                outputList.RemoveAt(outputList.Count - 1);
+            }
+
+            var totalAmountOutputList = outputList.Sum(u => u.Amount);
+            var minDateTimeInput = inputList.Min(u => u.Date);
+            var totalAmountInputList = inputList.Sum(u => u.Amount);
+            var minAmountInputsByDate = minInputsByDate.Sum(u => u.Amount);
+
+            OutputVM outputVM = new()
+            {
+                InputList = inputList,
+                Output = obj.Output,
+            };
+
+            obj.Output.ApplicationUserId = userId;
+
+            if (obj.Output.Date < minDateTimeInput)
+            {
+                TempData["error"] = "Date entered is invalid!";
+                return View(outputVM);
+            }
+
+            if (obj.Output.Amount > totalAmountInputList || (obj.Output.Amount + totalAmountOutputList) > totalAmountInputList)
+            {
+                TempData["error"] = "Amount overflows total inputs!";
+                return View(outputVM);
+            }
+
+            if (obj.Output.Amount > minAmountInputsByDate)
+            {
+                TempData["error"] = "Amount overflows inputs by its date!";
+                return View(outputVM);
+            }
 
             if (ModelState.IsValid)
             {
-
-                Stock stock = _unitOfWork.Stock.Get(u => u.Date == obj.Date);
-
+                Stock stock = _unitOfWork.Stock.Get(u => u.ApplicationUserId == userId);
                 if (stock != null)
                 {
-                    stock.Date = obj.Date;
-                    stock.Amount = obj.Amount;
-                    stock.UnitCost = obj.UnitCost;
-                    stock.TotalCost = obj.TotalCost;
-                    stock.ApplicationUserId = obj.ApplicationUserId;
+                    stock.Date = obj.Output.Date;
+                    stock.Amount = obj.Output.Amount;
+                    stock.UnitCost = obj.Output.UnitCost;
+                    stock.TotalCost = obj.Output.TotalCost;
+                    stock.ApplicationUserId = obj.Output.ApplicationUserId;
                     _unitOfWork.Stock.Update(stock);
                 }
 
-                _unitOfWork.Output.Update(obj);
+                _unitOfWork.Output.Update(obj.Output);
                 _unitOfWork.Save();
                 TempData["success"] = "Output updated successfully!";
                 return RedirectToAction("Index");
             }
-            return View();
-
+            return View(obj); 
         }
-
 
         // Return view Delete ---------------------------------------------------
         public IActionResult Delete(int? id)

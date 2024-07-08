@@ -59,10 +59,10 @@
                             @obj.Amount
                         </td>
                         <td>
-                            C$ @obj.UnitCost
+                            $ @obj.UnitCost
                         </td>
                         <td>
-                            C$ @obj.TotalCost
+                            $ @obj.TotalCost
                         </td>
                         <td>
                             <div class="btn-group" role="group">
@@ -86,7 +86,7 @@
                     <td>
                     </td>
                     <td>
-                        C$ @Model.Sum(u => u.TotalCost).ToString("0.00")
+                        $ @Model.Sum(u => u.TotalCost).ToString("0.00")
                     </td>
                     <td></td>
                 </tr>

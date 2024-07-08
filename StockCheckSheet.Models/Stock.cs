@@ -21,13 +21,13 @@ namespace StockCheckSheetWeb.Models
         public int Amount { get; set; }
 
         [Required(ErrorMessage = "Unit Cost is required.")]
-        [DisplayName("Unit Cost")]
+        [DisplayName("Unit Cost ($)")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Unit Cost must be greater than 0.")]
         public double UnitCost { get; set; }
 
 
         [Required(ErrorMessage = "Total Cost is required.")]
-        [DisplayName("Total Cost")]
+        [DisplayName("Total Cost ($)")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Total Cost must be greater than 0.")]
         public double TotalCost { get; set; }
 

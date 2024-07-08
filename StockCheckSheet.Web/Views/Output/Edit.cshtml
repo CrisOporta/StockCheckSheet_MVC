@@ -1,38 +1,43 @@
-﻿@model Output
+﻿@model OutputVM
 
 @{
-    ViewData["Title"] = "Edit Output";
+    ViewData["Title"] = "Create Output";
 }
 
 
 <form method="post" class="d-flex pb-4 justify-content-center">
-    <input asp-for="Id" hidden />
+    <input asp-for="Output.Id" hidden />
     <div class="border p-3 mt-4 w-50">
-        <div class="row pb-2">
-            <h2 class="text-primary">Edit Output</h2>
+        <div class="row pb-2 d-flex align-items-center">
+            <h2 class="col-6 text-primary">Edit Output</h2>
+            <div class="col-4"></div>
+            <div class="col-2">
+                <p><strong>Inputs: </strong>@Model.InputList.Sum(u => u.Amount)</p>
+            </div>
+
             <hr />
         </div>
 
         <div class="mb-3 row p-3 py-0">
-            <label asp-for="@Model.Date" class="p-0 py-2"></label>
-            <input asp-for="@Model.Date" class="form-control">
-            <span asp-validation-for="@Model.Date" class="text-danger"></span>
+            <label asp-for="Output.Date" class="p-0 py-2"></label>
+            <input asp-for="Output.Date" class="form-control">
+            <span asp-validation-for="Output.Date" class="text-danger"></span>
         </div>
 
         <div class="mb-3 row p-3 py-0">
-            <label asp-for="Amount" class="p-0 py-2"></label>
-            <input asp-for="Amount" class="form-control" id="amount" />
-            <span asp-validation-for="Amount" class="text-danger"></span>
+            <label asp-for="Output.Amount" class="p-0 py-2"></label>
+            <input asp-for="Output.Amount" class="form-control" id="amount" />
+            <span asp-validation-for="Output.Amount" class="text-danger"></span>
         </div>
         <div class="mb-3 row p-3 py-0">
-            <label asp-for="UnitCost" class="p-0 py-2"></label>
-            <input asp-for="UnitCost" class="form-control" type="number" id="unitCost" />
-            <span asp-validation-for="UnitCost" class="text-danger"></span>
+            <label asp-for="Output.UnitCost" class="p-0 py-2"></label>
+            <input asp-for="Output.UnitCost" class="form-control" type="number" id="unitCost" />
+            <span asp-validation-for="Output.UnitCost" class="text-danger"></span>
         </div>
         <div class="mb-3 row p-3 py-0">
-            <label asp-for="TotalCost" class="p-0 py-2"></label>
-            <input asp-for="TotalCost" class="form-control" type="number" id="totalCost" readonly />
-            <span asp-validation-for="TotalCost" class="text-danger"></span>
+            <label asp-for="Output.TotalCost" class="p-0 py-2"></label>
+            <input asp-for="Output.TotalCost" class="form-control" type="number" id="totalCost" readonly />
+            <span asp-validation-for="Output.TotalCost" class="text-danger"></span>
         </div>
 
         <div class="row py-2">
