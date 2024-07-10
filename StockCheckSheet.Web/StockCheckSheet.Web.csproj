@@ -9,14 +9,17 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\StockCheckSheet.DataAccess\StockCheckSheet.DataAccess.csproj" />
+		<ProjectReference Include="..\StockCheckSheet.Models\StockCheckSheet.Models.csproj" />
 		<ProjectReference Include="..\StockCheckSheet.Utility\StockCheckSheet.Utility.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="AutoMapper" Version="13.0.1" />
 	  <PackageReference Include="Azure.Identity" Version="1.11.4" />
+	  <PackageReference Include="DocX" Version="3.0.1" />
 	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.6" />
 	  <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.6" />
+	  <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.7" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

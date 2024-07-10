@@ -5,10 +5,8 @@ using StockCheckSheet.DataAccess.Repository;
 using Microsoft.AspNetCore.Identity;
 using StockCheckSheet.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using StockCheckSheetWeb;
+using StockCheckSheet.Web.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +26,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
+builder.Services.AddSignalR();
 
 
 var app = builder.Build();
@@ -50,5 +49,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapHub<ChatHub>("/chatHub");
 app.MapRazorPages();
 app.Run();
