@@ -1,14 +1,15 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using StockCheckSheet.DataAccess.Data;
+using Xceed.Document.NET;
 using StockCheckSheet.DataAccess.Repository.IRepository;
 using StockCheckSheet.Models.ViewModel;
 using StockCheckSheet.Utility;
 using StockCheckSheetWeb.Models;
 using System.Security.Claims;
+using Xceed.Words.NET;
+using Alignment = Xceed.Document.NET.Alignment;
 
 namespace StockCheckSheetWeb.Controllers
 {
@@ -94,6 +95,57 @@ namespace StockCheckSheetWeb.Controllers
         }
 
 
+
+        public IActionResult ExportToWord()
+        {
+            var outputs = _unitOfWork.Output.GetAll().OrderBy(u => u.Date).ToList();
+
+            using (var document = DocX.Create("Outputs.docx"))
+            {
+                // Agregar un título
+                document.InsertParagraph("Outputs")
+                    .FontSize(20)
+                    .Bold()
+                    .Alignment = Alignment.center;
+
+                // Agregar una tabla
+                var table = document.AddTable(outputs.Count + 2, 4);
+                table.Design = TableDesign.TableGrid;
+
+                // Agregar los encabezados
+                table.Rows[0].Cells[0].Paragraphs[0].Append("Date").Bold();
+                table.Rows[0].Cells[1].Paragraphs[0].Append("Amount").Bold();
+                table.Rows[0].Cells[2].Paragraphs[0].Append("Unit Cost").Bold();
+                table.Rows[0].Cells[3].Paragraphs[0].Append("Total Cost").Bold();
+
+                // Agregar valores
+                for (int i = 0; i < outputs.Count; i++)
+                {
+                    table.Rows[i + 1].Cells[0].Paragraphs[0].Append(outputs[i].Date.ToString("dd/MM/yyyy"));
+                    table.Rows[i + 1].Cells[1].Paragraphs[0].Append(outputs[i].Amount.ToString());
+                    table.Rows[i + 1].Cells[2].Paragraphs[0].Append(outputs[i].UnitCost.ToString());
+                    table.Rows[i + 1].Cells[3].Paragraphs[0].Append(outputs[i].TotalCost.ToString());
+                }
+
+                // Agregar totales
+                table.Rows[outputs.Count + 1].Cells[0].Paragraphs[0].Append("Total").Bold();
+                table.Rows[outputs.Count + 1].Cells[1].Paragraphs[0].Append(outputs.Sum(u => u.Amount).ToString());
+                table.Rows[outputs.Count + 1].Cells[3].Paragraphs[0].Append(outputs.Sum(u => u.TotalCost).ToString());
+
+                // Insertar la tabla en el documento
+                document.InsertTable(table);
+
+                // Guardar el documento en un MemoryStream
+                var stream = new MemoryStream();
+                document.SaveAs(stream);
+                stream.Position = 0;
+
+                string wordName = $"Outputs-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.docx";
+                return File(stream, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", wordName);
+            }
+        }
+
+
         // List all Outputs ---------------------------------------------------
         public IActionResult Index()
         {
@@ -154,19 +206,19 @@ namespace StockCheckSheetWeb.Controllers
 
             obj.Output.ApplicationUserId = userId;
 
-            if(obj.Output.Date < minDateTimeInput)
+            if (obj.Output.Date < minDateTimeInput)
             {
                 TempData["error"] = "Date entered is invalid!";
                 return View(outputVM);
             }
 
-            if(obj.Output.Amount > totalAmountInputList || (obj.Output.Amount + totalAmountOutputList) > totalAmountInputList)
+            if (obj.Output.Amount > totalAmountInputList || (obj.Output.Amount + totalAmountOutputList) > totalAmountInputList)
             {
                 TempData["error"] = "Amount overflows total inputs!";
                 return View(outputVM);
             }
 
-            if(obj.Output.Amount > minAmountInputsByDate)
+            if (obj.Output.Amount > minAmountInputsByDate)
             {
                 TempData["error"] = "Amount overflows inputs by its date!";
                 return View(outputVM);
@@ -284,7 +336,7 @@ namespace StockCheckSheetWeb.Controllers
                 TempData["success"] = "Output updated successfully!";
                 return RedirectToAction("Index");
             }
-            return View(obj); 
+            return View(obj);
         }
 
         // Return view Delete ---------------------------------------------------

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using StockCheckSheet.Models;
 
 namespace StockCheckSheet.DataAccess.Data
 {
@@ -15,6 +16,8 @@ namespace StockCheckSheet.DataAccess.Data
         public DbSet<Input> Inputs { get; set; }
         public DbSet<Output> Outputs { get; set; }
         public DbSet<Stock> Stocks { get; set; }
+
+        public DbSet<ChatMessage> ChatMessages { get; set; }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
