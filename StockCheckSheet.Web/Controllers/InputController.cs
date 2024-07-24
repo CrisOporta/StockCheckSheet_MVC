@@ -1,10 +1,12 @@
-﻿using ClosedXML.Excel;
+﻿using AspNetCore.Reporting;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StockCheckSheet.DataAccess.Repository.IRepository;
 using StockCheckSheet.Utility;
 using StockCheckSheetWeb.Models;
+using System.Data;
 using System.Security.Claims;
 
 namespace StockCheckSheetWeb.Controllers
@@ -15,10 +17,14 @@ namespace StockCheckSheetWeb.Controllers
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<IdentityUser> _userManager;
-        public InputController(IUnitOfWork unitOfWork, UserManager<IdentityUser> userManager)
+        private readonly IWebHostEnvironment _webHostEnv;
+
+        public InputController(IUnitOfWork unitOfWork, UserManager<IdentityUser> userManager, IWebHostEnvironment webHostEnv)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _webHostEnv = webHostEnv;
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
         }
 
         public IActionResult ExportToExcel()
@@ -90,6 +96,44 @@ namespace StockCheckSheetWeb.Controllers
                 return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
             }
         }
+
+        public IActionResult InputsInfo()
+        {
+            var dt = new DataTable();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            var inputs = _unitOfWork.Input.GetAll(u => u.ApplicationUserId == userId).OrderBy(u => u.Date).ToList();
+
+            // Crear el DataTable
+            dt.Columns.Add("Date", typeof(string));
+            dt.Columns.Add("Amount", typeof(decimal));
+            dt.Columns.Add("UnitCost", typeof(decimal));
+            dt.Columns.Add("TotalCost", typeof(decimal));
+
+            // Llenar el DataTable
+            foreach (var input in inputs)
+            {
+                string formattedDate = input.Date.ToString("dd/MM/yyyy");
+                dt.Rows.Add(formattedDate, input.Amount, input.UnitCost, input.TotalCost);
+            }
+
+            string mimeType = "";
+            int extension = 1;
+            var path = $"{_webHostEnv.WebRootPath}\\Reports\\rptInputsInfo.rdlc";
+
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("prm1", "RDLC Report");
+            parameters.Add("prm2", DateTime.Now.ToString("dd-MMM-yyyy"));
+            parameters.Add("prm3", "Input Report");
+
+            LocalReport localReport = new LocalReport(path);
+            localReport.AddDataSource("dsInputInfo", dt);
+
+            var res = localReport.Execute(RenderType.Pdf, extension, parameters, mimeType);
+            return File(res.MainStream, "application/pdf");
+        }
+
 
 
         // List all Inputs ---------------------------------------------------
